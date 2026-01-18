@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import joblib
 import numpy as np
 from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
 
 # -------------------------------------------------
 # Initialize FastAPI app
@@ -14,20 +15,23 @@ app = FastAPI(
 )
 
 # -------------------------------------------------
-# CORS Configuration (Production-safe for demo apps)
+# CORS Configuration (Production-safe)
 # -------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins (Vercel + local)
     allow_credentials=True,
-    allow_methods=["*"],  # GET, POST, OPTIONS
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # -------------------------------------------------
-# Load trained ML model
+# Load trained ML model (PATH FIX ✅)
 # -------------------------------------------------
-model = joblib.load("backend/model/churn_model.pkl")
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "model" / "churn_model.pkl"
+
+model = joblib.load(MODEL_PATH)
 
 # -------------------------------------------------
 # Request schema
@@ -38,7 +42,7 @@ class CustomerData(BaseModel):
     monetary: float
 
 # -------------------------------------------------
-# Health check / root endpoint
+# Health check endpoint
 # -------------------------------------------------
 @app.get("/")
 def health_check():
