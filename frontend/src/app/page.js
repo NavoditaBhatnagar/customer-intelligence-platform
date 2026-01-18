@@ -6,7 +6,7 @@ export default function Home() {
   const [recency, setRecency] = useState("");
   const [frequency, setFrequency] = useState("");
   const [monetary, setMonetary] = useState("");
-  const [result, setResult] = useState(null);
+  const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const handlePredict = async () => {
@@ -18,9 +18,7 @@ export default function Home() {
         "https://customer-intelligence-platform-1.onrender.com/predict",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             recency_days: Number(recency),
             frequency: Number(frequency),
@@ -38,62 +36,61 @@ export default function Home() {
     setLoading(false);
   };
 
-  const riskColor =
-    result?.risk_level === "High"
-      ? "bg-red-100 text-red-700"
-      : result?.risk_level === "Medium"
-      ? "bg-yellow-100 text-yellow-700"
-      : "bg-green-100 text-green-700";
+  const riskStyles = {
+    High: "bg-red-100 text-red-700 border-red-300",
+    Medium: "bg-yellow-100 text-yellow-700 border-yellow-300",
+    Low: "bg-green-100 text-green-700 border-green-300",
+  };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl p-8">
+    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8 text-gray-900">
         {/* Header */}
-        <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
+        <h1 className="text-3xl font-bold text-center mb-2">
           Customer Churn Prediction
         </h1>
-        <p className="text-center text-gray-500 mb-8">
-          Enter customer behavior metrics to predict churn risk
+        <p className="text-center text-gray-600 mb-8">
+          Predict whether a customer is likely to churn
         </p>
 
         {/* Inputs */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Recency (days since last transaction)
+            <label className="block text-sm font-semibold mb-1">
+              Recency (days)
             </label>
             <input
               type="number"
-              className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="90"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               value={recency}
               onChange={(e) => setRecency(e.target.value)}
-              placeholder="e.g. 90"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Frequency (number of purchases)
+            <label className="block text-sm font-semibold mb-1">
+              Frequency
             </label>
             <input
               type="number"
-              className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="1"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               value={frequency}
               onChange={(e) => setFrequency(e.target.value)}
-              placeholder="e.g. 1"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Monetary Value (total spend)
+            <label className="block text-sm font-semibold mb-1">
+              Monetary Value
             </label>
             <input
               type="number"
-              className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="1200"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               value={monetary}
               onChange={(e) => setMonetary(e.target.value)}
-              placeholder="e.g. 1200"
             />
           </div>
         </div>
@@ -110,27 +107,40 @@ export default function Home() {
         {/* Results */}
         {result && (
           <div className="mt-8 border-t pt-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            <h2 className="text-xl font-semibold mb-4">
               Prediction Result
             </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Churn Prediction</span>
-                <span className="font-semibold">
+                <span>Churn Prediction</span>
+                <span className="font-bold">
                   {result.churn_prediction === 1 ? "Yes" : "No"}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-gray-600">Churn Probability</span>
-                <span className="font-semibold">
-                  {result.churn_probability}
+                <span>Churn Probability</span>
+                <span className="font-bold">
+                  {(result.churn_probability * 100).toFixed(1)}%
                 </span>
               </div>
 
+              {/* Probability Bar */}
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div
+                  className="h-3 bg-blue-600"
+                  style={{
+                    width: `${result.churn_probability * 100}%`,
+                  }}
+                />
+              </div>
+
+              {/* Risk Badge */}
               <div
-                className={`mt-4 text-center py-2 rounded-lg font-semibold ${riskColor}`}
+                className={`mt-4 text-center py-2 rounded-lg border font-semibold ${
+                  riskStyles[result.risk_level]
+                }`}
               >
                 Risk Level: {result.risk_level}
               </div>
