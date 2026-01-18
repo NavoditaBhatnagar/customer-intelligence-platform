@@ -190,4 +190,4 @@ Aspiring Data Scientist | Machine Learning | Full-Stack ML Projects
 
 🔗 GitHub: https://github.com/NavoditaBhatnagar
 
-🔗 LinkedIn: (add your LinkedIn profile here)
+🔗 LinkedIn: https://www.linkedin.com/in/navodita-bhatnagar/
